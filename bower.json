@@ -15,7 +15,7 @@
     "ng-twitter",
     "twitter",
     "angularjs",
-    "oauth",
+    "oauth"
   ],
   "ignore": [
     "**/.*",
