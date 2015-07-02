@@ -1,0 +1,16 @@
+{
+  "name": "ng-twitter",
+  "version": "0.1.0",
+  "authors": [
+    "Simon Reimler <saimon@devdactic.com>"
+  ],
+  "main": "./dist/ng-twitter.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
