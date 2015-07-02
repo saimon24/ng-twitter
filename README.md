@@ -42,26 +42,26 @@ Now ngTwitter is ready to use!
 
 ## Using ngTwitter In Your Project
 1. Find your **ClientId** and your **SecretId** from your [Twitter app](https://apps.twitter.com/).
-2. Grab you OAuth token inside your app. If you are using the [Ionic Framework](http://ionicframework.com/) you should use the [ngCordova](http://ngcordova.com/) library.
-After including it, your request for a OAuth token could look like this:
-
+2. Grab you OAuth token inside your app. If you are using the [Ionic Framework](http://ionicframework.com/) you should use the [ngCordova](http://ngcordova.com/) library. After including it, your request for a OAuth token could look like this:
+```javascript
     $cordovaOauth.twitter(clientId, clientSecret).then(function (succ) {
         $twitterApi.configure(clientId, clientSecret, succ);
       }, function(error) {
         console.log(error);
     });
+```
 *If you got your OAuth token differently, just make sure to configure ngTwitter before making any other calls like this:*
-
+```javascript
     $twitterApi.configure(clientId, clientSecret, oauthToken);
-
-3. After configuring you can use all the endpoint wrapper. Each API call returns a promise. The success callback is the complete Twitter Rest response.
-
-
+```
+After configuring you can use all the endpoint wrapper. Each API call returns a promise. The success callback is the complete Twitter Rest response.
+```javascript
     $twitterApi.getHomeTimeline().then(function(data) {
       console.log(data);
     }, function(error) {
       console.log('err: ' + error);
     });
+````
 
 
 ## Contribution Rules
