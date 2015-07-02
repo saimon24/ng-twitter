@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/saimon24/ng-twitter.svg?branch=master)](https://travis-ci.org/saimon24/ng-twitter)
+
 # ngTwitter
 
 ngTwitter is an AngularJS [Twitter REST API](https://dev.twitter.com/rest/public) wrapper.  The purpose of this library is to quickly and easily access all the Twitter API endpoints without having to worry about the request signing and signature.
