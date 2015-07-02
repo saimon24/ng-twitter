@@ -1,6 +1,6 @@
 # ngTwitter
 
-ngTwitter is an AngularJS [Twitter REST API](https://dev.twitter.com/rest/public) wrapper.  The purpose of this library is to quickly and easily access all the Twitter API endpoints without having to worry about the request signing and signature. 
+ngTwitter is an AngularJS [Twitter REST API](https://dev.twitter.com/rest/public) wrapper.  The purpose of this library is to quickly and easily access all the Twitter API endpoints without having to worry about the request signing and signature.
 
 
 ## Requirements
@@ -14,7 +14,7 @@ You need to have a Twitter app and a valid OAuth token.
 
 Add this repository as dependency:
 
-    $ bower install ng-twitter --save
+    $ bower install ng-twitter-api --save
 
 This will add the dependency to your project and to the `bower.json` file.
 
@@ -40,26 +40,26 @@ Now ngTwitter is ready to use!
 
 ## Using ngTwitter In Your Project
 1. Find your **ClientId** and your **SecretId** from your [Twitter app](https://apps.twitter.com/).
-2. Grab you OAuth token inside your app. If you are using the [Ionic Framework](http://ionicframework.com/) you should use the [ngCordova](http://ngcordova.com/) library. 
-After including it, your request for a OAuth token could look like this: 
+2. Grab you OAuth token inside your app. If you are using the [Ionic Framework](http://ionicframework.com/) you should use the [ngCordova](http://ngcordova.com/) library.
+After including it, your request for a OAuth token could look like this:
 
-		$cordovaOauth.twitter(clientId, clientSecret).then(function (succ) {
-			  $twitterApi.configure(clientId, clientSecret, succ);
-			}, function(error) {
-			  console.log(error);
-		});
+    $cordovaOauth.twitter(clientId, clientSecret).then(function (succ) {
+        $twitterApi.configure(clientId, clientSecret, succ);
+      }, function(error) {
+        console.log(error);
+    });
 *If you got your OAuth token differently, just make sure to configure ngTwitter before making any other calls like this:*
 
-		$twitterApi.configure(clientId, clientSecret, oauthToken);
+    $twitterApi.configure(clientId, clientSecret, oauthToken);
 
 3. After configuring you can use all the endpoint wrapper. Each API call returns a promise. The success callback is the complete Twitter Rest response.
 
 
-		$twitterApi.getHomeTimeline().then(function(data) {
-			console.log(data);
-		}, function(error) {
-			console.log('err: ' + error);
-		});
+    $twitterApi.getHomeTimeline().then(function(data) {
+      console.log(data);
+    }, function(error) {
+      console.log('err: ' + error);
+    });
 
 
 ## Contribution Rules
