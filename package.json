@@ -1,7 +1,7 @@
 {
-    "name": "ng-twitter",
+    "name": "ng-twitter-api",
     "version": "0.1.0",
-    "description": "Connect to Oauth providers using Apache Cordova and the InAppBrowser plugin",
+    "description": "AngularJS Twitter REST Api wrapper library",
     "author": {
         "name": "Simon Reimler",
         "url": "http://www.devdactic.com"

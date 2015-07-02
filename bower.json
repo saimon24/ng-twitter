@@ -1,5 +1,5 @@
 {
-  "name": "ng-twitter",
+  "name": "ng-twitter-api",
   "version": "0.1.0",
   "authors": [
     "Simon Reimler <http://www.devdactic.com>"
@@ -12,7 +12,7 @@
     "node"
   ],
   "keywords": [
-    "ng-twitter",
+    "ng-twitter-api",
     "twitter",
     "angularjs",
     "oauth"
