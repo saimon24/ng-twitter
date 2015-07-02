@@ -2,10 +2,21 @@
   "name": "ng-twitter",
   "version": "0.1.0",
   "authors": [
-    "Simon Reimler <saimon@devdactic.com>"
+    "Simon Reimler <http://www.devdactic.com>"
   ],
+  "homepage": "https://github.com/saimon24/ng-twitter",
+  "description": "AngularJS Twitter REST Api wrapper library",
   "main": "./dist/ng-twitter.js",
   "license": "MIT",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "ng-twitter",
+    "twitter",
+    "angularjs",
+    "oauth",
+  ],
   "ignore": [
     "**/.*",
     "node_modules",
