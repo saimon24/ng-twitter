@@ -27,22 +27,20 @@ angular.module('twitter.functions', [])
     return deferred.promise;
   }
 
-  function makeHttpPostRequest(url, deferred) {
-    $http.post(url)
+  function makeHttpPostRequest(url, params, deferred) {
+    $http.post(url, params)
     // $http({
-    //     method: 'POST',
-    //     url: url,
-        // headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        // transformRequest: function(obj) {
-            // var str = [];
-            // console.log('encode url...');
-            // for(var p in obj)
-            // str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-            // console.log(str.join("&"));
-            // return str.join("&");
-        // },
-        // data: data
-      // })
+    // method: 'POST',
+    // url: url,
+    // transformRequest: function(obj) {
+    //     var str = [];
+    //     for(var p in obj)
+    //     str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    //     console.log(str.join("&"));
+    //     return str.join("&");
+    // },
+    // data: params
+    // })
     .success(function(data, status, headers, config) {
       deferred.resolve(data);
     })
@@ -55,13 +53,12 @@ angular.module('twitter.functions', [])
     return deferred.promise;
   }
 
-  function objectToParameters(obj) {
-    var str = [];
-    console.log('encode url...');
-    for(var p in obj)
-    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    console.log(str.join("&"));
-    return str.join("&");
+  function transformRequest(obj) {
+      var str = [];
+      for(var p in obj)
+      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+      console.log(str.join("&"));
+      return str.join("&");
   }
 
   return {
@@ -88,7 +85,8 @@ angular.module('twitter.functions', [])
       var parameters = {status: statusText};
       var encoded = encodeURIComponent(statusText);
       $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, parameters, clientId, clientSecret, token);
-      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + 'status=' + encoded, deferred);
+      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + transformRequest(parameters), parameters, deferred);
+      // return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + 'status=' + encoded, parameters, deferred);
     }
   };
 }]);
@@ -206,7 +204,11 @@ angular.module('twitter.utils', [])
         oauth_version: "1.0"
       };
       var signatureObj = createSignature(method, url, oauthObject, bodyParameters, clientSecret, token.oauth_token_secret);
+      // $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+
       $http.defaults.headers.common.Authorization = signatureObj.authorization_header;
+      // $http.defaults.headers.post.Authorization = signatureObj.authorization_header;
+
       return signatureObj;
     }
   };

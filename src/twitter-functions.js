@@ -27,8 +27,8 @@ angular.module('twitter.functions', [])
     return deferred.promise;
   }
 
-  function makeHttpPostRequest(url, deferred) {
-    $http.post(url, data)
+  function makeHttpPostRequest(url, params, deferred) {
+    $http.post(url, params)
     .success(function(data, status, headers, config) {
       deferred.resolve(data);
     })
@@ -39,6 +39,14 @@ angular.module('twitter.functions', [])
         deferred.reject(status);
     });
     return deferred.promise;
+  }
+
+  function transformRequest(obj) {
+      var str = [];
+      for(var p in obj)
+      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+      console.log(str.join("&"));
+      return str.join("&");
   }
 
   return {
@@ -63,9 +71,8 @@ angular.module('twitter.functions', [])
     postStatusUpdate: function(statusText) {
       var deferred = $q.defer();
       var parameters = {status: statusText};
-      var encoded = encodeURIComponent(statusText);
       $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, parameters, clientId, clientSecret, token);
-      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + 'status=' + encoded, deferred);
+      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + transformRequest(parameters), parameters, deferred);
     }
   };
 }]);
