@@ -9,8 +9,12 @@ angular.module('twitter.functions', [])
   var SEARCH_TWEETS_URL = 'https://api.twitter.com/1.1/search/tweets.json';
   var STATUS_UPDATE_URL = 'https://api.twitter.com/1.1/statuses/update.json';
 
-  function makeHttpGetRequest(url, deferred) {
-    $http.get(url)
+  function makeHttpGetRequest(url, data, deferred) {
+    $http({
+        method: 'GET',
+        url: url,
+        params: data
+      })
     .success(function(data, status, headers, config) {
       deferred.resolve(data);
     })
@@ -23,19 +27,41 @@ angular.module('twitter.functions', [])
     return deferred.promise;
   }
 
-
-  function makeHttpPostRequest(url, data, deferred) {
-    $http.post(url, data)
+  function makeHttpPostRequest(url, deferred) {
+    $http.post(url)
+    // $http({
+    //     method: 'POST',
+    //     url: url,
+        // headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        // transformRequest: function(obj) {
+            // var str = [];
+            // console.log('encode url...');
+            // for(var p in obj)
+            // str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            // console.log(str.join("&"));
+            // return str.join("&");
+        // },
+        // data: data
+      // })
     .success(function(data, status, headers, config) {
       deferred.resolve(data);
     })
     .error(function(data, status, headers, config) {
         if (status === 401) {
-          // token = null;
+          token = null;
         }
         deferred.reject(status);
     });
     return deferred.promise;
+  }
+
+  function objectToParameters(obj) {
+    var str = [];
+    console.log('encode url...');
+    for(var p in obj)
+    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    console.log(str.join("&"));
+    return str.join("&");
   }
 
   return {
@@ -44,35 +70,55 @@ angular.module('twitter.functions', [])
       clientSecret = cSecret;
       token = authToken;
     },
-    getHomeTimeline: function() {
+    getHomeTimeline: function(parameters) {
       var deferred = $q.defer();
-      $twitterHelpers.createTwitterSignature('GET', HOME_TIMELINE_URL, {}, clientId, clientSecret, token);
-      return makeHttpGetRequest(HOME_TIMELINE_URL, deferred);
+      if (typeof(parameters)==='undefined') parameters = {};
+      $twitterHelpers.createTwitterSignature('GET', HOME_TIMELINE_URL, parameters, clientId, clientSecret, token);
+      return makeHttpGetRequest(HOME_TIMELINE_URL, parameters, deferred);
     },
-    searchTweets: function(keyword) {
+    searchTweets: function(keyword, parameters) {
       var deferred = $q.defer();
-      var bodyObj = {q: keyword};
-      $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, bodyObj, clientId, clientSecret, token);
-      var encoded = encodeURI(keyword);
-      return makeHttpGetRequest(SEARCH_TWEETS_URL +'?' + 'q=' + encoded, deferred);
+      if (typeof(parameters)==='undefined') parameters = {};
+      parameters = angular.extend(parameters, {q: keyword});
+      var test = $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, parameters, clientId, clientSecret, token);
+      return makeHttpGetRequest(SEARCH_TWEETS_URL, parameters, deferred);
     },
     postStatusUpdate: function(statusText) {
       var deferred = $q.defer();
-      // statusText = 'Hello Ladies + Gentlemen, a signed OAuth request!';
-      statusText = 'This is a automatic rest test.';
+      var parameters = {status: statusText};
       var encoded = encodeURIComponent(statusText);
-
-      var bodyObj = {status: statusText};
-
-      console.log(bodyObj);
-      var test = $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, bodyObj, clientId, clientSecret, token);
-      console.log(test);
-      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + 'status=' + encoded, null, deferred);
+      $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, parameters, clientId, clientSecret, token);
+      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + 'status=' + encoded, deferred);
     }
   };
 }]);
 
-angular.module('ngTwitter', [
+/*
+ * AngularJS Twitter REST Api wrapper
+ *
+ * Created by Simon Reimler
+ * http://www.devdactic.com
+ *
+ *
+ *
+ * DESCRIPTION:
+ *
+ * Configure the library with:
+ *    - Consumer Key (API Key)
+ *    - Consumer Secret (API Secret)
+ *    - Valid OAuth Token
+ *
+ *
+ *
+ * Wrapped Endpoints:
+ *
+ *    statuses/home_timeline
+ *    statuses/update
+ *    search/tweets
+ *
+ */
+
+ angular.module('ngTwitter', [
   'twitter.functions',
   'twitter.utils'
 ]);
@@ -160,10 +206,7 @@ angular.module('twitter.utils', [])
         oauth_version: "1.0"
       };
       var signatureObj = createSignature(method, url, oauthObject, bodyParameters, clientSecret, token.oauth_token_secret);
-      // $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
       $http.defaults.headers.common.Authorization = signatureObj.authorization_header;
-      // $http.defaults.headers.post.Authorization = signatureObj.authorization_header;
-
       return signatureObj;
     }
   };

@@ -9,8 +9,12 @@ angular.module('twitter.functions', [])
   var SEARCH_TWEETS_URL = 'https://api.twitter.com/1.1/search/tweets.json';
   var STATUS_UPDATE_URL = 'https://api.twitter.com/1.1/statuses/update.json';
 
-  function makeHttpGetRequest(url, deferred) {
-    $http.get(url)
+  function makeHttpGetRequest(url, data, deferred) {
+    $http({
+        method: 'GET',
+        url: url,
+        params: data
+      })
     .success(function(data, status, headers, config) {
       deferred.resolve(data);
     })
@@ -22,7 +26,6 @@ angular.module('twitter.functions', [])
     });
     return deferred.promise;
   }
-
 
   function makeHttpPostRequest(url, deferred) {
     $http.post(url, data)
@@ -44,23 +47,24 @@ angular.module('twitter.functions', [])
       clientSecret = cSecret;
       token = authToken;
     },
-    getHomeTimeline: function() {
+    getHomeTimeline: function(parameters) {
       var deferred = $q.defer();
-      $twitterHelpers.createTwitterSignature('GET', HOME_TIMELINE_URL, {}, clientId, clientSecret, token);
-      return makeHttpGetRequest(HOME_TIMELINE_URL, deferred);
+      if (typeof(parameters)==='undefined') parameters = {};
+      $twitterHelpers.createTwitterSignature('GET', HOME_TIMELINE_URL, parameters, clientId, clientSecret, token);
+      return makeHttpGetRequest(HOME_TIMELINE_URL, parameters, deferred);
     },
-    searchTweets: function(keyword) {
+    searchTweets: function(keyword, parameters) {
       var deferred = $q.defer();
-      var bodyObj = {q: keyword};
-      $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, bodyObj, clientId, clientSecret, token);
-      var encoded = encodeURI(keyword);
-      return makeHttpGetRequest(SEARCH_TWEETS_URL +'?' + 'q=' + encoded, deferred);
+      if (typeof(parameters)==='undefined') parameters = {};
+      parameters = angular.extend(parameters, {q: keyword});
+      var test = $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, parameters, clientId, clientSecret, token);
+      return makeHttpGetRequest(SEARCH_TWEETS_URL, parameters, deferred);
     },
     postStatusUpdate: function(statusText) {
       var deferred = $q.defer();
+      var parameters = {status: statusText};
       var encoded = encodeURIComponent(statusText);
-      var bodyObj = {status: statusText};
-      var test = $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, bodyObj, clientId, clientSecret, token);
+      $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, parameters, clientId, clientSecret, token);
       return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + 'status=' + encoded, deferred);
     }
   };
