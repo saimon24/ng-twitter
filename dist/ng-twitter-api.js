@@ -1,76 +1,73 @@
 angular.module('twitter.functions', [])
 
 .factory('$twitterApi', ['$q', '$twitterHelpers', '$http', function($q, $twitterHelpers, $http) {
-  // var twitterKey = 'STORAGE.TWITTER.KEY';
   var token;
   var clientId = '';
   var clientSecret = '';
 
   var HOME_TIMELINE_URL = 'https://api.twitter.com/1.1/statuses/home_timeline.json';
   var SEARCH_TWEETS_URL = 'https://api.twitter.com/1.1/search/tweets.json';
+  var STATUS_UPDATE_URL = 'https://api.twitter.com/1.1/statuses/update.json';
 
-  // function storeUserToken(data) {
-  //   token = data;
-  //   window.localStorage.setItem(twitterKey, JSON.stringify(data));
-  // }
-  //
-  // function getStoredToken() {
-  //   return JSON.parse(window.localStorage.getItem(twitterKey));
-  // }
-  //
-  // function removeToken() {
-  //   window.localStorage.removeItem(twitterKey);
-  //   token = null;
-  // }
-  //
-  // function logout() {
-  //   removeToken();
-  // }
+  function makeHttpGetRequest(url, deferred) {
+    $http.get(url)
+    .success(function(data, status, headers, config) {
+      deferred.resolve(data);
+    })
+    .error(function(data, status, headers, config) {
+        if (status === 401) {
+          token = null;
+        }
+        deferred.reject(status);
+    });
+    return deferred.promise;
+  }
+
+
+  function makeHttpPostRequest(url, data, deferred) {
+    $http.post(url, data)
+    .success(function(data, status, headers, config) {
+      deferred.resolve(data);
+    })
+    .error(function(data, status, headers, config) {
+        if (status === 401) {
+          // token = null;
+        }
+        deferred.reject(status);
+    });
+    return deferred.promise;
+  }
 
   return {
     configure: function(cId, cSecret, authToken) {
       clientId = cId;
       clientSecret = cSecret;
-      // storeUserToken(authToken);
       token = authToken;
     },
-    logout: function() {
-      token = null;
-    },
     getHomeTimeline: function() {
-      console.log('token: ' + token);
-
       var deferred = $q.defer();
       $twitterHelpers.createTwitterSignature('GET', HOME_TIMELINE_URL, {}, clientId, clientSecret, token);
-      $http.get(HOME_TIMELINE_URL)
-      .success(function(data, status, headers, config) {
-        deferred.resolve(data);
-      })
-      .error(function(data, status, headers, config) {
-          if (status === 401) {
-            logout();
-          }
-          deferred.reject(status);
-      });
-      return deferred.promise;
+      return makeHttpGetRequest(HOME_TIMELINE_URL, deferred);
     },
     searchTweets: function(keyword) {
-      console.log('token: ' + token);
       var deferred = $q.defer();
-      var keywordObj = {q:keyword};
-      $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, keywordObj, clientId, clientSecret, token);
+      var bodyObj = {q: keyword};
+      $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, bodyObj, clientId, clientSecret, token);
+      var encoded = encodeURI(keyword);
+      return makeHttpGetRequest(SEARCH_TWEETS_URL +'?' + 'q=' + encoded, deferred);
+    },
+    postStatusUpdate: function(statusText) {
+      var deferred = $q.defer();
+      // statusText = 'Hello Ladies + Gentlemen, a signed OAuth request!';
+      statusText = 'This is a automatic rest test.';
+      var encoded = encodeURIComponent(statusText);
 
-      $http.get(SEARCH_TWEETS_URL +'?' + 'q=' + keyword)
-      .success(function(data, status, headers, config) {
-          deferred.resolve(data);
-      })
-      .error(function(data, status, headers, config) {
-          if (status === 401) {
-            logout();
-          }
-          deferred.reject(status);
-      });
-      return deferred.promise;
+      var bodyObj = {status: statusText};
+
+      console.log(bodyObj);
+      var test = $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, bodyObj, clientId, clientSecret, token);
+      console.log(test);
+      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + 'status=' + encoded, null, deferred);
     }
   };
 }]);
@@ -163,7 +160,10 @@ angular.module('twitter.utils', [])
         oauth_version: "1.0"
       };
       var signatureObj = createSignature(method, url, oauthObject, bodyParameters, clientSecret, token.oauth_token_secret);
+      // $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
       $http.defaults.headers.common.Authorization = signatureObj.authorization_header;
+      // $http.defaults.headers.post.Authorization = signatureObj.authorization_header;
+
       return signatureObj;
     }
   };
