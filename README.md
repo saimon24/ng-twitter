@@ -63,6 +63,14 @@ After configuring you can use all the endpoint wrapper. Each API call returns a 
     });
 ````
 
+### Available methods
+```javascript
+$twitterApi.configure(string clientId, string clientSecret, object token);
+$twitterApi.getHomeTimeline();
+$twitterApi.searchTweets(string keyword);
+$twitterApi.postStatusUpdate(string statusText);
+```
+
 
 ## Contribution Rules
 
