@@ -56,7 +56,7 @@ Now ngTwitter is ready to use!
 ```
 After configuring you can use all the endpoint wrapper. Each API call returns a promise. The success callback is the complete Twitter Rest response.
 ```javascript
-    $twitterApi.getHomeTimeline().then(function(data) {
+    $twitterApi.getHomeTimeline({count: 5}).then(function(data) {
       console.log(data);
     }, function(error) {
       console.log('err: ' + error);
@@ -64,11 +64,12 @@ After configuring you can use all the endpoint wrapper. Each API call returns a 
 ````
 
 ### Available methods
+The options object is optional on every request. Just check out the Twitter documentation what you want to send.
 ```javascript
 $twitterApi.configure(string clientId, string clientSecret, object token);
-$twitterApi.getHomeTimeline();
-$twitterApi.searchTweets(string keyword);
-$twitterApi.postStatusUpdate(string statusText);
+$twitterApi.getHomeTimeline(object options);
+$twitterApi.searchTweets(string keyword, object options);
+$twitterApi.postStatusUpdate(string statusText, object options);
 ```
 
 

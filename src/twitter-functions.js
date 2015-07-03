@@ -44,9 +44,20 @@ angular.module('twitter.functions', [])
   function transformRequest(obj) {
       var str = [];
       for(var p in obj)
-      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+      str.push(encodeURIComponent(p) + "=" + escapeSpecialCharacters(obj[p]));
       console.log(str.join("&"));
       return str.join("&");
+  }
+
+  function escapeSpecialCharacters(string) {
+    // TODO: this encoding still not works correct..401 on messages with these symbols.
+    var tmp = encodeURIComponent(string);
+    tmp = tmp.replace('!','%21');
+    tmp = tmp.replace('*','%2A');
+    tmp = tmp.replace('(','%28');
+    tmp = tmp.replace(')','%29');
+    tmp = tmp.replace("'",'%27');
+    return tmp;
   }
 
   return {
@@ -68,9 +79,10 @@ angular.module('twitter.functions', [])
       var test = $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, parameters, clientId, clientSecret, token);
       return makeHttpGetRequest(SEARCH_TWEETS_URL, parameters, deferred);
     },
-    postStatusUpdate: function(statusText) {
+    postStatusUpdate: function(statusText, parameters) {
       var deferred = $q.defer();
-      var parameters = {status: statusText};
+      if (typeof(parameters)==='undefined') parameters = {};
+      parameters = angular.extend(parameters, {status: statusText});
       $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, parameters, clientId, clientSecret, token);
       return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + transformRequest(parameters), parameters, deferred);
     }
