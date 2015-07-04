@@ -25,7 +25,7 @@ directory:
 
     <script src="../ng-twitter/dist/ng-twitter-api.min.js"></script>
 
-Twitter requires HMAC-SHA1 signatures in their Oauth implementation. Including the sha1.js component of jsSHA for this:
+Twitter requires HMAC-SHA1 signatures in their Oauth implementation. Include the sha1.js component of jsSHA for this:
 
     <script src="../sha1.js"></script>
 
