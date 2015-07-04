@@ -23,7 +23,7 @@ This will add the dependency to your project and to the `bower.json` file.
 The JavaScript library must then be added to your **index.html** file found in your projects **www**
 directory:
 
-    <script src="../ng-twitter/dist/ng-twitter-api.min.js"></script>
+    <script src="../ng-twitter-api/dist/ng-twitter-api.min.js"></script>
 
 Twitter requires HMAC-SHA1 signatures in their Oauth implementation. Include the sha1.js component of jsSHA for this:
 
