@@ -88,8 +88,8 @@ angular.module('twitter.utils', [])
       var str = [];
       for(var p in obj)
       str.push(encodeURIComponent(p) + "=" + escapeSpecialCharacters(obj[p]));
-      console.log('?' + str.join('&'));
-      return '?' + str.join('&');
+      console.log(str.join('&'));
+      return str.join('&');
   }
 
   return {
