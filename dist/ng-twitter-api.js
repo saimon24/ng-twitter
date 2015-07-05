@@ -9,11 +9,17 @@ angular.module('twitter.functions', [])
   var SEARCH_TWEETS_URL = 'https://api.twitter.com/1.1/search/tweets.json';
   var STATUS_UPDATE_URL = 'https://api.twitter.com/1.1/statuses/update.json';
 
-  function makeHttpGetRequest(url, data, deferred) {
+  function getRequest(url, neededParams, optionalParams) {
+    var deferred = $q.defer();
+    if (typeof(optionalParams)==='undefined') optionalParams = {};
+    if (typeof(neededParams)==='undefined') neededParams = {};
+    var parameters = angular.extend(optionalParams, neededParams);
+    $twitterHelpers.createTwitterSignature('GET', url, parameters, clientId, clientSecret, token);
+
     $http({
         method: 'GET',
         url: url,
-        params: data
+        params: parameters
       })
     .success(function(data, status, headers, config) {
       deferred.resolve(data);
@@ -27,8 +33,16 @@ angular.module('twitter.functions', [])
     return deferred.promise;
   }
 
-  function makeHttpPostRequest(url, params, deferred) {
-    $http.post(url, params)
+  function postRequest(url, neededParams, optionalParams) {
+    var deferred = $q.defer();
+    if (typeof(optionalParams)==='undefined') optionalParams = {};
+    var parameters = angular.extend(optionalParams, neededParams);
+
+    // // Append the bodyparams to the URL
+    var t = $twitterHelpers.createTwitterSignature('POST', url, parameters, clientId, clientSecret, token);
+    if (parameters !== {}) url = url + '?' + $twitterHelpers.transformRequest(parameters);
+
+    $http.post(url, parameters)
     .success(function(data, status, headers, config) {
       deferred.resolve(data);
     })
@@ -41,24 +55,6 @@ angular.module('twitter.functions', [])
     return deferred.promise;
   }
 
-  function transformRequest(obj) {
-      var str = [];
-      for(var p in obj)
-      str.push(encodeURIComponent(p) + "=" + escapeSpecialCharacters(obj[p]));
-      console.log(str.join("&"));
-      return str.join("&");
-  }
-
-  function escapeSpecialCharacters(string) {
-    var tmp = encodeURIComponent(string);
-    tmp = tmp.replace('!','%21');
-    tmp = tmp.replace('*','%2A');
-    tmp = tmp.replace('(','%28');
-    tmp = tmp.replace(')','%29');
-    tmp = tmp.replace("'",'%27');
-    return tmp;
-  }
-
   return {
     configure: function(cId, cSecret, authToken) {
       clientId = cId;
@@ -66,24 +62,13 @@ angular.module('twitter.functions', [])
       token = authToken;
     },
     getHomeTimeline: function(parameters) {
-      var deferred = $q.defer();
-      if (typeof(parameters)==='undefined') parameters = {};
-      $twitterHelpers.createTwitterSignature('GET', HOME_TIMELINE_URL, parameters, clientId, clientSecret, token);
-      return makeHttpGetRequest(HOME_TIMELINE_URL, parameters, deferred);
+      return getRequest(HOME_TIMELINE_URL, parameters);
     },
     searchTweets: function(keyword, parameters) {
-      var deferred = $q.defer();
-      if (typeof(parameters)==='undefined') parameters = {};
-      parameters = angular.extend(parameters, {q: keyword});
-      var test = $twitterHelpers.createTwitterSignature('GET', SEARCH_TWEETS_URL, parameters, clientId, clientSecret, token);
-      return makeHttpGetRequest(SEARCH_TWEETS_URL, parameters, deferred);
+      return getRequest(SEARCH_TWEETS_URL, {q: keyword}, parameters);
     },
     postStatusUpdate: function(statusText, parameters) {
-      var deferred = $q.defer();
-      if (typeof(parameters)==='undefined') parameters = {};
-      parameters = angular.extend(parameters, {status: statusText});
-      $twitterHelpers.createTwitterSignature('POST', STATUS_UPDATE_URL, parameters, clientId, clientSecret, token);
-      return makeHttpPostRequest(STATUS_UPDATE_URL + '?' + transformRequest(parameters), parameters, deferred);
+      return postRequest(STATUS_UPDATE_URL, {status: statusText}, parameters);
     }
   };
 }]);
@@ -126,6 +111,10 @@ angular.module('twitter.utils', [])
   * For more information see: https://github.com/nraboy/ng-cordova-oauth
   * Sign an Oauth 1.0 request
   *
+  * Addition From Simon Reimler:
+  * Encode Bodyparams with escapeSpecialCharacters(), because Twitter is very strict with OAuth.
+  * See: http://stackoverflow.com/questions/14672502/bug-or-spec-change-of-twitter-api-1-1
+  *
   * @param    string method
   * @param    string endPoint
   * @param    object headerParameters
@@ -139,7 +128,7 @@ angular.module('twitter.utils', [])
       var headerAndBodyParameters = angular.copy(headerParameters);
       var bodyParameterKeys = Object.keys(bodyParameters);
       for(var i = 0; i < bodyParameterKeys.length; i++) {
-        headerAndBodyParameters[bodyParameterKeys[i]] = encodeURIComponent(bodyParameters[bodyParameterKeys[i]]);
+        headerAndBodyParameters[bodyParameterKeys[i]] = escapeSpecialCharacters(bodyParameters[bodyParameterKeys[i]]);
       }
       var signatureBaseString = method + "&" + encodeURIComponent(endPoint) + "&";
       var headerAndBodyParameterKeys = (Object.keys(headerAndBodyParameters)).sort();
@@ -190,6 +179,24 @@ angular.module('twitter.utils', [])
     return text;
   }
 
+  function escapeSpecialCharacters(string) {
+    var tmp = encodeURIComponent(string);
+    tmp = tmp.replace(/\!/g, "%21");
+    tmp = tmp.replace(/\'/g, "%27");
+    tmp = tmp.replace(/\(/g, "%28");
+    tmp = tmp.replace(/\)/g, "%29");
+    tmp = tmp.replace(/\*/g, "%2A");
+    return tmp;
+  }
+
+  function transformRequest(obj) {
+      var str = [];
+      for(var p in obj)
+      str.push(encodeURIComponent(p) + "=" + escapeSpecialCharacters(obj[p]));
+      console.log(str.join('&'));
+      return str.join('&');
+  }
+
   return {
     createTwitterSignature: function(method, url, bodyParameters, clientId, clientSecret, token) {
       var oauthObject = {
@@ -203,6 +210,7 @@ angular.module('twitter.utils', [])
       var signatureObj = createSignature(method, url, oauthObject, bodyParameters, clientSecret, token.oauth_token_secret);
       $http.defaults.headers.common.Authorization = signatureObj.authorization_header;
       return signatureObj;
-    }
+    },
+    transformRequest: transformRequest
   };
 }]);
