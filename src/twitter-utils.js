@@ -6,6 +6,10 @@ angular.module('twitter.utils', [])
   * For more information see: https://github.com/nraboy/ng-cordova-oauth
   * Sign an Oauth 1.0 request
   *
+  * Addition From Simon Reimler:
+  * Encode Bodyparams with escapeSpecialCharacters(), because Twitter is very strict with OAuth.
+  * See: http://stackoverflow.com/questions/14672502/bug-or-spec-change-of-twitter-api-1-1
+  *
   * @param    string method
   * @param    string endPoint
   * @param    object headerParameters
@@ -19,7 +23,7 @@ angular.module('twitter.utils', [])
       var headerAndBodyParameters = angular.copy(headerParameters);
       var bodyParameterKeys = Object.keys(bodyParameters);
       for(var i = 0; i < bodyParameterKeys.length; i++) {
-        headerAndBodyParameters[bodyParameterKeys[i]] = encodeURIComponent(bodyParameters[bodyParameterKeys[i]]);
+        headerAndBodyParameters[bodyParameterKeys[i]] = escapeSpecialCharacters(bodyParameters[bodyParameterKeys[i]]);
       }
       var signatureBaseString = method + "&" + encodeURIComponent(endPoint) + "&";
       var headerAndBodyParameterKeys = (Object.keys(headerAndBodyParameters)).sort();
@@ -70,6 +74,24 @@ angular.module('twitter.utils', [])
     return text;
   }
 
+  function escapeSpecialCharacters(string) {
+    var tmp = encodeURIComponent(string);
+    tmp = tmp.replace(/\!/g, "%21");
+    tmp = tmp.replace(/\'/g, "%27");
+    tmp = tmp.replace(/\(/g, "%28");
+    tmp = tmp.replace(/\)/g, "%29");
+    tmp = tmp.replace(/\*/g, "%2A");
+    return tmp;
+  }
+
+  function transformRequest(obj) {
+      var str = [];
+      for(var p in obj)
+      str.push(encodeURIComponent(p) + "=" + escapeSpecialCharacters(obj[p]));
+      console.log('?' + str.join('&'));
+      return '?' + str.join('&');
+  }
+
   return {
     createTwitterSignature: function(method, url, bodyParameters, clientId, clientSecret, token) {
       var oauthObject = {
@@ -83,6 +105,7 @@ angular.module('twitter.utils', [])
       var signatureObj = createSignature(method, url, oauthObject, bodyParameters, clientSecret, token.oauth_token_secret);
       $http.defaults.headers.common.Authorization = signatureObj.authorization_header;
       return signatureObj;
-    }
+    },
+    transformRequest: transformRequest
   };
 }]);
