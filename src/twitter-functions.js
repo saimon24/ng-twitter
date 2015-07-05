@@ -8,6 +8,8 @@ angular.module('twitter.functions', [])
   var HOME_TIMELINE_URL = 'https://api.twitter.com/1.1/statuses/home_timeline.json';
   var SEARCH_TWEETS_URL = 'https://api.twitter.com/1.1/search/tweets.json';
   var STATUS_UPDATE_URL = 'https://api.twitter.com/1.1/statuses/update.json';
+  var STATUS_MENTIONS_URL = 'https://api.twitter.com/1.1/statuses/mentions_timeline.json';
+  var USER_TIMELINE_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
 
   function getRequest(url, neededParams, optionalParams) {
     var deferred = $q.defer();
@@ -63,6 +65,12 @@ angular.module('twitter.functions', [])
     },
     getHomeTimeline: function(parameters) {
       return getRequest(HOME_TIMELINE_URL, parameters);
+    },
+    getMentionsTimeline: function(parameters) {
+      return getRequest(STATUS_MENTIONS_URL, parameters);
+    },
+    getUserTimeline: function(parameters) {
+      return getRequest(USER_TIMELINE_URL, parameters);
     },
     searchTweets: function(keyword, parameters) {
       return getRequest(SEARCH_TWEETS_URL, {q: keyword}, parameters);

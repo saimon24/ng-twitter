@@ -66,10 +66,12 @@ After configuring you can use all the endpoint wrapper. Each API call returns a 
 ### Available methods
 The options object is optional on every request. Just check out the Twitter documentation what you want to send.
 ```javascript
-$twitterApi.configure(string clientId, string clientSecret, object token);
-$twitterApi.getHomeTimeline(object options);
-$twitterApi.searchTweets(string keyword, object options);
-$twitterApi.postStatusUpdate(string statusText, object options);
+configure(string clientId, string clientSecret, object token);
+getHomeTimeline(object options); // GET statuses/home_timeline
+getMentionsTimeline(object options) // GET statuses/mentions_timeline
+getUserTimeline(object options) // GET statuses/user_timeline
+searchTweets(string keyword, object options); // GET search/tweets
+postStatusUpdate(string statusText, object options); // POST statuses/update
 ```
 
 
