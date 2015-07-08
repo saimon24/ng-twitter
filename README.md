@@ -50,6 +50,8 @@ Now ngTwitter is ready to use!
         console.log(error);
     });
 ```
+For a complete Ionic integration guide also check out my Blogpost [How To Easily Use The Twitter REST Api With AngularJS](http://devdactic.com/twitter-rest-api-angularjs/).
+
 *If you got your OAuth token differently, just make sure to configure ngTwitter before making any other calls like this:*
 ```javascript
     $twitterApi.configure(clientId, clientSecret, oauthToken);
