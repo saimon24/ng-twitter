@@ -6,7 +6,7 @@
   ],
   "homepage": "https://github.com/saimon24/ng-twitter",
   "description": "AngularJS Twitter REST Api wrapper library",
-  "main": "./dist/ng-twitter.js",
+  "main": "./dist/ng-twitter-api.js",
   "license": "MIT",
   "moduleType": [
     "node"
