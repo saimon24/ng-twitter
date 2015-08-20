@@ -72,6 +72,7 @@ getMentionsTimeline(object options) // GET statuses/mentions_timeline
 getUserTimeline(object options) // GET statuses/user_timeline
 searchTweets(string keyword, object options); // GET search/tweets
 postStatusUpdate(string statusText, object options); // POST statuses/update
+getUserDetails(string user_id, object options); // GET users/show
 ```
 
 
