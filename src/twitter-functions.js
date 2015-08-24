@@ -10,6 +10,7 @@ angular.module('twitter.functions', [])
   var STATUS_UPDATE_URL = 'https://api.twitter.com/1.1/statuses/update.json';
   var STATUS_MENTIONS_URL = 'https://api.twitter.com/1.1/statuses/mentions_timeline.json';
   var USER_TIMELINE_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+  var USER_DETAILS_URL = 'https://api.twitter.com/1.1/users/show.json';
 
   function getRequest(url, neededParams, optionalParams) {
     var deferred = $q.defer();
@@ -77,6 +78,9 @@ angular.module('twitter.functions', [])
     },
     postStatusUpdate: function(statusText, parameters) {
       return postRequest(STATUS_UPDATE_URL, {status: statusText}, parameters);
+    },
+    getUserDetails: function(user_id, parameters) {
+      return getRequest(USER_DETAILS_URL, {user_id: user_id}, parameters);
     }
   };
 }]);
