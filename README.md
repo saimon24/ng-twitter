@@ -25,9 +25,9 @@ directory:
 
     <script src="../ng-twitter-api/dist/ng-twitter-api.min.js"></script>
 
-Twitter requires HMAC-SHA1 signatures in their Oauth implementation. Include the sha1.js component of jsSHA for this:
+Twitter requires HMAC-SHA1 signatures in their Oauth implementation. This project install jsSHA with bower so you only have to include the file:
 
-    <script src="../sha1.js"></script>
+    <script src="../bower_components/jsSHA/src/sha1.js"></script>
 
 * [jsSHA 1.6.0](https://github.com/Caligatio/jsSHA) Secure Hash Library
 
