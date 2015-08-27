@@ -23,5 +23,8 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "jsSHA": "1.6.0"
+  }
 }
