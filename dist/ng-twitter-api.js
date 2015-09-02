@@ -81,7 +81,9 @@ angular.module('twitter.functions', [])
     },
     getUserDetails: function(user_id, parameters) {
       return getRequest(USER_DETAILS_URL, {user_id: user_id}, parameters);
-    }
+    },
+    getRequest: getRequest,
+    postRequest: postRequest
   };
 }]);
 

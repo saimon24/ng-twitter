@@ -75,6 +75,8 @@ getUserTimeline(object options) // GET statuses/user_timeline
 searchTweets(string keyword, object options); // GET search/tweets
 postStatusUpdate(string statusText, object options); // POST statuses/update
 getUserDetails(string user_id, object options); // GET users/show
+getRequest(string full_twitter_api_url, object options); // GET custom url
+postRequest(string full_twitter_api_url, object options); // POST custom url
 ```
 
 
