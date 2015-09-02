@@ -1,6 +1,6 @@
 {
     "name": "ng-twitter-api",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "AngularJS Twitter REST Api wrapper library",
     "author": {
         "name": "Simon Reimler",
